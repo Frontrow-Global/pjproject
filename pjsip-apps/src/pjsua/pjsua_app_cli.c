@@ -2151,7 +2151,6 @@ pj_status_t cmd_call_handler(pj_cli_cmd_val *cval)
 	status = cmd_show_current_call(cval);
 	break;
     case CMD_CALL_ALLOW_RINGTONES:
-    	PJ_LOG(1,(THIS_FILE, "CMD RECEIVED"));
 	status = cmd_ringtones_allowed(cval);
 	break;
     }
