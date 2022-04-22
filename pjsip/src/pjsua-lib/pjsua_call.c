@@ -4880,6 +4880,11 @@ static void pjsua_call_on_state_changed(pjsip_inv_session *inv,
 	call->allow_ringtones = PJ_FALSE;
     }
 
+    if (inv->state == PJSIP_INV_STATE_CONNECTING)	{
+	/* Answer 2XX was sent, so disallow ringing  */
+	call->ringtones_requested = PJ_FALSE;
+	}
+
     if (inv->state == PJSIP_INV_STATE_DISCONNECTED)	{
 	/* Send signal via logging subsystem. Only keep /r/n decorator  */
 	unsigned currentDecor = pj_log_get_decor();
