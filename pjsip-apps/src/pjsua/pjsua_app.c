@@ -248,6 +248,15 @@ static void on_call_state(pjsua_call_id call_id, pjsip_event *e)
 	    pjsip_endpt_schedule_timer(endpt, &cd->timer, &delay);
 	}
 
+	if (call_info.state == PJSIP_INV_STATE_CONFIRMED)
+	{
+		/* Send signal via logging subsystem. Only keep /r/n decorator  */
+		unsigned currentDecor = pj_log_get_decor();
+		pj_log_set_decor( PJ_LOG_HAS_NEWLINE );
+		PJ_LOG(1,(THIS_FILE, ":SIGNAL:CONNECTED:"));
+		pj_log_set_decor(currentDecor);
+	}
+
 	if (call_info.state == PJSIP_INV_STATE_EARLY) {
 	    int code;
 	    pj_str_t reason;
