@@ -917,7 +917,7 @@ static pj_bool_t handle_alfa_num(cli_telnet_sess *sess, unsigned char *data)
 	}
 	return PJ_TRUE;
     }
-    return PJ_FALSE;
+    return PJ_TRUE;
 }
 
 /*
