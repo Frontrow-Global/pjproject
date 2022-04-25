@@ -4880,19 +4880,6 @@ static void pjsua_call_on_state_changed(pjsip_inv_session *inv,
 	call->allow_ringtones = PJ_FALSE;
     }
 
-    if (inv->state == PJSIP_INV_STATE_CONNECTING)	{
-	/* Answer 2XX was sent, so disallow ringing  */
-	call->ringtones_requested = PJ_FALSE;
-	}
-
-    if (inv->state == PJSIP_INV_STATE_DISCONNECTED)	{
-	/* Send signal via logging subsystem. Only keep /r/n decorator  */
-	unsigned currentDecor = pj_log_get_decor();
-	pj_log_set_decor( PJ_LOG_HAS_NEWLINE );
-	PJ_LOG(1,(THIS_FILE, ":SIGNAL:HANGUP_CALL:"));
-	pj_log_set_decor(currentDecor);
-	}
-
     /* Get call times */
     switch (inv->state) {
 	case PJSIP_INV_STATE_EARLY:
@@ -6634,12 +6621,13 @@ PJ_DEF(pj_status_t) pjsua_call_allow_ringtones(pjsua_call_id call_id)
 }
 
 /*
- * Handle ringtones requested.
+ * set ringtones requested value for current call.
  */
-PJ_DEF(pj_status_t) pjsua_call_ringtones_requested(pjsua_call_id call_id)
+PJ_DEF(pj_status_t) pjsua_call_ringtones_requested(pjsua_call_id call_id,
+								pj_bool_t isRequested)
 {
     pjsua_call *call = &pjsua_var.calls[call_id];
-	call->ringtones_requested = PJ_TRUE;
+	call->ringtones_requested = isRequested;
 
 }
 

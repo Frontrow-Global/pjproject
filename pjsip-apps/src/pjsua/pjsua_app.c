@@ -86,11 +86,7 @@ static void ringback_start(pjsua_call_id call_id)
 
 static void ring_stop(pjsua_call_id call_id)
 {
-    pjsua_call_info call_info;
-
-    pjsua_call_get_info(call_id, &call_info);
-
-    call_info.rem_ringtones_requested = PJ_FALSE;
+    pjsua_call_ringtones_requested(call_id, PJ_FALSE);
 
     if (app_config.no_tones)
 	return;
@@ -122,11 +118,11 @@ static void ring_stop(pjsua_call_id call_id)
 
 static void ring_start(pjsua_call_id call_id)
 {
+    pjsua_call_ringtones_requested(call_id, PJ_TRUE);
+
     pjsua_call_info call_info;
 
     pjsua_call_get_info(call_id, &call_info);
-
-    pjsua_call_ringtones_requested(call_id);
 
     if (call_info.rem_ringtones_allowed == PJ_FALSE)
     return;
@@ -190,6 +186,12 @@ static void on_call_state(pjsua_call_id call_id, pjsip_event *e)
     pjsua_call_get_info(call_id, &call_info);
 
     if (call_info.state == PJSIP_INV_STATE_DISCONNECTED) {
+
+	/* Send signal via logging subsystem. Only keep /r/n decorator  */
+	unsigned currentDecor = pj_log_get_decor();
+	pj_log_set_decor( PJ_LOG_HAS_NEWLINE );
+	PJ_LOG(1,(THIS_FILE, ":SIGNAL:HANGUP_CALL:"));
+	pj_log_set_decor(currentDecor);
 
 	/* Stop all ringback for this call */
 	ring_stop(call_id);
