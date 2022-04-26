@@ -1646,13 +1646,15 @@ static pj_status_t cmd_answer_call(pj_cli_cmd_val *cval)
 /* Allow ringtones in call */
 static pj_status_t cmd_ringtones_allowed(pj_cli_cmd_val *cval)
 {
+    pj_status_t status = PJ_SUCCESS;
+
     if (current_call == PJSUA_INVALID_ID) {
 	static const pj_str_t err_msg = {"No current call\n", 17};
 	pj_cli_sess_write_msg(cval->sess, err_msg.ptr, err_msg.slen);
     } else {
-	pjsua_call_allow_ringtones(current_call);
+	status = pjsua_call_allow_ringtones(current_call);
     }
-    return PJ_SUCCESS;
+    return status;
 }
 
 /* Hangup call */

@@ -6615,9 +6615,11 @@ static pjsip_redirect_op pjsua_call_on_redirected(pjsip_inv_session *inv,
 PJ_DEF(pj_status_t) pjsua_call_allow_ringtones(pjsua_call_id call_id)
 {
     pjsua_call *call = &pjsua_var.calls[call_id];
-	call->allow_ringtones = PJ_TRUE;
+
+    call->allow_ringtones = PJ_TRUE;
     pjsua_var.ua_cfg.cb.on_ringtones_allowed(call_id, PJ_TRUE);
 
+    return PJ_SUCCESS;
 }
 
 /*
@@ -6629,5 +6631,6 @@ PJ_DEF(pj_status_t) pjsua_call_ringtones_requested(pjsua_call_id call_id,
     pjsua_call *call = &pjsua_var.calls[call_id];
 	call->ringtones_requested = isRequested;
 
+	return PJ_SUCCESS;
 }
 
