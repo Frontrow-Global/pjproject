@@ -38,7 +38,8 @@
 
 
 #define THIS_FILE 			"alsa_dev.c"
-#define ALSA_DEVICE_NAME 		"plughw:%d,%d"
+// #define ALSA_DEVICE_NAME 		"plughw:%d,%d"
+#define ALSA_DEVICE_NAME 		"plug:8mic"
 #define ALSASOUND_PLAYBACK 		1
 #define ALSASOUND_CAPTURE  		2
 #define MAX_SOUND_CARDS 		5
@@ -47,7 +48,7 @@
 #define MAX_MIX_NAME_LEN                64 
 
 /* Set to 1 to enable tracing */
-#define ENABLE_TRACING			0
+#define ENABLE_TRACING			0	
 
 #if ENABLE_TRACING
 #	define TRACE_(expr)		PJ_LOG(5,expr)
@@ -240,7 +241,7 @@ static pj_status_t add_dev (struct alsa_factory *af, const char *dev_name)
     /* Try to open the device in capture mode */
     ca_result = snd_pcm_open (&pcm, dev_name, SND_PCM_STREAM_CAPTURE, 0);
     if (ca_result >= 0) {
-	TRACE_((THIS_FILE, "Try to open the device for capture - success"));
+	TRACE_((THIS_FILE, "Try to open the device for capture - success, Device: %s /n", dev_name));
 	snd_pcm_close (pcm);
     } else {
 	TRACE_((THIS_FILE, "Try to open the device for capture - failure"));
@@ -268,7 +269,7 @@ static pj_status_t add_dev (struct alsa_factory *af, const char *dev_name)
     adi->input_count = (ca_result>=0) ? 1 : 0;
 
     /* Set the default sample rate */
-    adi->default_samples_per_sec = 8000;
+    adi->default_samples_per_sec = 16000;
 
     /* Driver name */
     strcpy(adi->driver, "ALSA");
@@ -410,6 +411,9 @@ static pj_status_t alsa_factory_refresh(pjmedia_aud_dev_factory *f)
     snd_lib_error_set_handler(null_alsa_error_handler);
 #endif
 
+
+
+
     n = hints;
     while (*n != NULL) {
 	char *name = snd_device_name_get_hint(*n, "NAME");
@@ -420,6 +424,10 @@ static pj_status_t alsa_factory_refresh(pjmedia_aud_dev_factory *f)
 	}
 	n++;
     }
+
+    /* TS Test adding device ..      */
+    add_dev(af, "frontrow_tanto");
+
 
     /* Get the mixer name */
     get_mixer_name(af);
@@ -641,15 +649,17 @@ static pj_status_t open_playback (struct alsa_stream* stream,
     if (param->play_id < 0 || param->play_id >= stream->af->dev_cnt)
 	return PJMEDIA_EAUD_INVDEV;
 
+//    stream->af->devs[param->play_id].name = "plug:Tanto_playback";
+
+
     /* Open PCM for playback */
     PJ_LOG (5,(THIS_FILE, "open_playback: Open playback device '%s'",
 	       stream->af->devs[param->play_id].name));
-    result = snd_pcm_open (&stream->pb_pcm,
-			   stream->af->devs[param->play_id].name,
-			   SND_PCM_STREAM_PLAYBACK,
-			   0);
+
+    result = snd_pcm_open (&stream->pb_pcm, stream->af->devs[param->play_id].name, SND_PCM_STREAM_PLAYBACK, 0);
+//    result = snd_pcm_open (&stream->pb_pcm, "plug:Tanto_playback", SND_PCM_STREAM_PLAYBACK, 0);
     if (result < 0)
-	return PJMEDIA_EAUD_SYSERR;
+     return PJMEDIA_EAUD_SYSERR;
 
     /* Allocate a hardware parameters object. */
     snd_pcm_hw_params_alloca (&params);
@@ -779,15 +789,20 @@ static pj_status_t open_capture (struct alsa_stream* stream,
     if (param->rec_id < 0 || param->rec_id >= stream->af->dev_cnt)
 	return PJMEDIA_EAUD_INVDEV;
 
+//    stream->af->devs[param->rec_id].name = "plug:Tanto_capture";
+
     /* Open PCM for capture */
     PJ_LOG (5,(THIS_FILE, "open_capture: Open capture device '%s'",
 	       stream->af->devs[param->rec_id].name));
-    result = snd_pcm_open (&stream->ca_pcm,
-		            stream->af->devs[param->rec_id].name,
-			   SND_PCM_STREAM_CAPTURE,
-			   0);
+
+    PJ_LOG (5,(THIS_FILE, "open_capture: param->rec_id = %d and PJMEDIA_AUD_DEFAULT_CAPTURE_DEV = '%d' /n",
+	       param->rec_id, PJMEDIA_AUD_DEFAULT_CAPTURE_DEV));
+
+    result = snd_pcm_open (&stream->ca_pcm, stream->af->devs[param->rec_id].name, SND_PCM_STREAM_CAPTURE, 0);
+//& test // //result = snd_pcm_open (&stream->ca_pcm, "plughw:0,0", SND_PCM_STREAM_CAPTURE, 0);
+//    result = snd_pcm_open (&stream->ca_pcm, "plug:Tanto_capture", SND_PCM_STREAM_CAPTURE, 0);
     if (result < 0)
-	return PJMEDIA_EAUD_SYSERR;
+	  return PJMEDIA_EAUD_SYSERR;
 
     /* Allocate a hardware parameters object. */
     snd_pcm_hw_params_alloca (&params);

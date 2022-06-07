@@ -412,6 +412,8 @@
  *
  * Default: 4
  */
+#undef PJ_LOG_MAX_LEVEL
+
 #ifndef PJ_LOG_MAX_LEVEL
 #  define PJ_LOG_MAX_LEVEL   5
 #endif
@@ -424,6 +426,7 @@
  *
  * Default: 4000
  */
+
 #ifndef PJ_LOG_MAX_SIZE
 #  define PJ_LOG_MAX_SIZE	    4000
 #endif
