@@ -48,7 +48,7 @@ clean distclean realclean:
 	rm -f gcc.exe g++.exe
 
 install:
-	$(PYTHON_EXE) setup.py install --user
+	$(PYTHON_EXE) setup.py install --prefix=/usr/local/
 
 uninstall:
 	rm -f $(PYTHON_PKG_DIR)/pjsua2*
